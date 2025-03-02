@@ -10,32 +10,7 @@ import { PageLayout } from '../layout/PageLayout';
 import { DailySummary } from '../common/DailySummary';
 import { getStaff } from '../../services/staff';
 import { PageInstruction } from '../common/PageInstruction';
-
-interface CaseAssignment {
-  id: string;
-  name: string;
-  primaryRole: PrimaryRole;
-  secondaryRole?: SecondaryRole;
-  skills: string[];
-}
-
-interface Case {
-  id: string;
-  procedure: string;
-  room: string;
-  start: string;
-  end: string;
-  surgeon: {
-    id: string;
-    name: string;
-    specialty: string;
-    subspecialty: string;
-  };
-  assignments: {
-    rn: CaseAssignment | null;
-    st: CaseAssignment | null;
-  };
-}
+import { Case, CaseAssignment } from '../../types/cases';
 
 const Header = styled.div`
   margin-bottom: 2rem;

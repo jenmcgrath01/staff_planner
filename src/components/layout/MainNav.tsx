@@ -60,11 +60,9 @@ export const MainNav = () => {
 
   const isActive = (route: string) => {
     if (route === '/manager') {
-      return path === '/manager' || 
-             path === '/staff-schedule' || 
-             path === '/or-schedule';
+      return path.startsWith('/manager') || path === '/staff-schedule' || path === '/or-schedule';
     }
-    return path === route;
+    return path.startsWith(route);
   };
 
   return (
@@ -77,10 +75,10 @@ export const MainNav = () => {
         <NavItem $active={isActive('/manager')}>
           <Link to="/manager" onClick={() => setIsOpen(false)}>Manager/Charge Tools</Link>
         </NavItem>
-        <NavItem $active={path === '/staff'}>
+        <NavItem $active={isActive('/staff')}>
           <Link to="/staff" onClick={() => setIsOpen(false)}>Staff Tools</Link>
         </NavItem>
-        <NavItem $active={path === '/surgeon'}>
+        <NavItem $active={isActive('/surgeon')}>
           <Link to="/surgeon" onClick={() => setIsOpen(false)}>Surgeon Tools</Link>
         </NavItem>
       </NavList>
