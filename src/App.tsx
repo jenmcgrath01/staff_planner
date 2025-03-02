@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material';
@@ -23,16 +23,16 @@ export const App = () => {
       <GlobalStyle />
       <MuiThemeProvider theme={muiTheme}>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter basename="/staff_planner">
+          <Router>
             <SimpleHeader />
             <Routes>
-              <Route path="/" element={<Navigate to="/staff-schedule" replace />} />
-              <Route path="/staff-schedule" element={<StaffScheduleView />} />
-              <Route path="/or-schedule" element={<ORScheduleView />} />
-              <Route path="/staff" element={<StaffTools />} />
-              <Route path="/surgeon" element={<SurgeonTools />} />
+              <Route path="" element={<Navigate to="staff-schedule" replace />} />
+              <Route path="staff-schedule" element={<StaffScheduleView />} />
+              <Route path="or-schedule" element={<ORScheduleView />} />
+              <Route path="staff" element={<StaffTools />} />
+              <Route path="surgeon" element={<SurgeonTools />} />
             </Routes>
-          </BrowserRouter>
+          </Router>
         </QueryClientProvider>
       </MuiThemeProvider>
     </StyledThemeProvider>

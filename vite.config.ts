@@ -5,10 +5,19 @@ import { resolve } from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/or-schedule/',
+  base: './',
   publicDir: 'public',
+  server: {
+    port: 5173,
+    open: true
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets'
+  },
   resolve: {
     alias: {
+      '@': resolve(__dirname, 'src'),
       '@public': resolve(__dirname, 'public')
     }
   }

@@ -4,82 +4,78 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const StepperContainer = styled.div`
   width: 100%;
-  margin: 2rem 0;  // Increase top margin
+  margin: 2rem 0;
+  position: relative;
 `;
 
 const Steps = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;  // Center the steps
   align-items: center;
   position: relative;
   margin-bottom: 1rem;
-  padding: 0 2rem;
-  max-width: 800px;
+  gap: 4rem;  // Reduce gap between steps
+  max-width: 400px;  // Constrain width to keep steps closer
   margin: 0 auto;
 
   &::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 2rem;
-    right: 2rem;
+    left: 50%;
+    transform: translate(-50%, -50%);  // Center the line
+    width: 200px;  // Fixed width for the connecting line
     height: 2px;
     background: #E5E7EB;
     z-index: 0;
   }
 `;
 
-const Step = styled.div<{ $active?: boolean; $completed?: boolean }>`
+const Step = styled.div<{ $active?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   z-index: 1;
   cursor: pointer;
+  background: white;
+  padding: 0 1rem;
 
   &:hover {
     opacity: 0.8;
   }
 `;
 
-const StepNumber = styled.div<{ $active?: boolean; $completed?: boolean }>`
-  width: 36px;
-  height: 36px;
+const StepNumber = styled.div<{ $active?: boolean }>`
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: ${props => props.$active 
-    ? 'white'
-    : props.$completed 
-      ? '#F3F4F6'
-      : '#E5E7EB'
-  };
-  color: ${props => props.$active
-    ? props.theme.colors.primary
-    : props.$completed
-      ? props.theme.colors.text.secondary
-      : '#6B7280'
-  };
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  border: 2px solid ${props => props.$active 
-    ? props.theme.colors.primary
-    : props.$completed
-      ? props.theme.colors.text.secondary
-      : '#E5E7EB'
+
+  /* Just two states: active (blue) or inactive (gray) */
+  background: ${props => props.$active 
+    ? '#0066F5'
+    : '#E5E7EB'
   };
+  
+  color: ${props => props.$active
+    ? '#FFFFFF'
+    : '#6B7280'
+  };
+
+  border: 2px solid ${props => props.$active 
+    ? '#0066F5'
+    : '#E5E7EB'
+  };
+
   box-shadow: ${props => props.$active 
     ? '0 2px 4px rgba(0, 0, 0, 0.1)' 
     : 'none'
   };
-
-  ${props => props.$completed && `
-    &::after {
-      content: '✓';
-      font-size: 0.875rem;
-    }
-  `}
 `;
 
 const StepLabel = styled.div<{ $active?: boolean }>`
@@ -106,13 +102,13 @@ const steps = [
   {
     number: 1,
     label: 'Staff Schedule',
-    path: '/staff-schedule',
+    path: 'staff-schedule',
     description: ''
   },
   {
     number: 2,
-    label: 'OR Assignments',
-    path: '/or-schedule',
+    label: 'Case Assignments',
+    path: 'or-schedule',
     description: ''
   }
 ];
@@ -120,28 +116,33 @@ const steps = [
 export const StepperNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const currentStep = steps.findIndex(step => step.path === location.pathname) + 1;
+  
+  // Get the current path from the hash
+  const currentPath = location.hash.slice(2);  // Remove '#/'
+
+  const currentStep = steps.findIndex(step => step.path === currentPath) + 1;
 
   return (
     <StepperContainer>
       <Steps>
-        {steps.map((step) => (
-          <Step 
-            key={step.number}
-            onClick={() => navigate(step.path)}
-            $active={currentStep === step.number}
-          >
-            <StepNumber 
-              $active={currentStep === step.number}
-              $completed={currentStep > step.number}
+        {steps.map((step) => {
+          const isActive = step.path === currentPath;
+          
+          return (
+            <Step 
+              key={step.number}
+              onClick={() => navigate(`/${step.path}`)}
+              $active={isActive}
             >
-              {step.number}
-            </StepNumber>
-            <StepLabel $active={currentStep === step.number}>
-              {step.label}
-            </StepLabel>
-          </Step>
-        ))}
+              <StepNumber $active={isActive}>
+                {step.number}
+              </StepNumber>
+              <StepLabel $active={isActive}>
+                {step.label}
+              </StepLabel>
+            </Step>
+          );
+        })}
       </Steps>
       <StepDescription>
         {steps[currentStep - 1]?.description}
