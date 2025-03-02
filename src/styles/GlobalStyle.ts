@@ -21,6 +21,7 @@ export const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     background: ${props => props.theme.colors.background.main};
     color: ${props => props.theme.colors.text.primary};
+    min-width: 100vw;
   }
 
   #root {
@@ -29,6 +30,7 @@ export const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
     width: 100vw;
     max-width: 100%;
+    overflow-x: hidden;
   }
 
   button {
