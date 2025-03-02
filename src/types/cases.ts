@@ -14,6 +14,8 @@ export interface Case {
   room: string;
   start: string;
   end: string;
+  startTime?: string;  // For backward compatibility
+  duration?: number;   // For backward compatibility
   surgeon: {
     id: string;
     name: string;

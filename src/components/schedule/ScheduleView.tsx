@@ -6,6 +6,7 @@ import { RoomSchedule } from './RoomSchedule';
 import { DateSelector } from './DateSelector';
 import { getCases } from '../../services/cases';
 import { Staff, PrimaryRole } from '../../types/staff';
+import { Case } from '../../types/cases';
 
 const Container = styled.div`
   max-width: 1000px;
