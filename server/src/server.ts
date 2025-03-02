@@ -6,7 +6,10 @@ import casesRoutes from './routes/cases';
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173', // Your React app URL
+  credentials: true // If you're using cookies/sessions
+}));
 app.use(express.json());
 
 // Basic health check endpoint
