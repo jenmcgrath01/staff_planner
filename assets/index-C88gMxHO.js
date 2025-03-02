@@ -622,23 +622,25 @@ export default theme;`}function ty(e={},...t){const{breakpoints:r,mixins:o={},sp
   font-weight: 600;
 `,KM=({text:e,emphasis:t})=>{if(!t)return R.jsx(jC,{children:e});const[r,o]=e.split(t);return R.jsxs(jC,{children:[r,R.jsx(H8,{children:t}),o]})},Y8=Se.div`
   width: 100%;
-  margin: 2rem 0;  // Increase top margin
+  margin: 2rem 0;
+  position: relative;
 `,q8=Se.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;  // Center the steps
   align-items: center;
   position: relative;
   margin-bottom: 1rem;
-  padding: 0 2rem;
-  max-width: 800px;
+  gap: 4rem;  // Reduce gap between steps
+  max-width: 400px;  // Constrain width to keep steps closer
   margin: 0 auto;
 
   &::before {
     content: '';
     position: absolute;
     top: 50%;
-    left: 2rem;
-    right: 2rem;
+    left: 50%;
+    transform: translate(-50%, -50%);  // Center the line
+    width: 200px;  // Fixed width for the connecting line
     height: 2px;
     background: #E5E7EB;
     z-index: 0;
@@ -650,13 +652,15 @@ export default theme;`}function ty(e={},...t){const{breakpoints:r,mixins:o={},sp
   position: relative;
   z-index: 1;
   cursor: pointer;
+  background: white;  // Add white background to cover the line
+  padding: 0 1rem;  // Add padding to create space around the circle
 
   &:hover {
     opacity: 0.8;
   }
 `,G8=Se.div`
-  width: 36px;
-  height: 36px;
+  width: 40px;  // Slightly larger circles
+  height: 40px;
   border-radius: 50%;
   background: ${e=>e.$active?"white":e.$completed?"#F3F4F6":"#E5E7EB"};
   color: ${e=>e.$active?e.theme.colors.primary:e.$completed?e.theme.colors.text.secondary:"#6B7280"};
@@ -1116,4 +1120,4 @@ export default theme;`}function ty(e={},...t){const{breakpoints:r,mixins:o={},sp
   color: ${e=>e.theme.colors.text.secondary};
   font-size: 1.125rem;
   line-height: 1.5;
-`,o9=()=>R.jsxs(Vp,{children:[R.jsx("h2",{children:"Personalized Surgeon Tools"}),R.jsx(r9,{children:"This is where surgeons go to see information about the staffing for their cases. Other features that mighb be here: review stats, view room, etc."})]}),a9=new iA,i9=mv({}),s9=()=>R.jsxs(Zz,{theme:n3,children:[R.jsx(r3,{}),R.jsx(nN,{theme:i9,children:R.jsx(uA,{client:a9,children:R.jsxs(j2,{basename:"/staff_planner",children:[R.jsx(e9,{}),R.jsxs(d2,{children:[R.jsx(Es,{path:"/",element:R.jsx(c2,{to:"/staff-schedule",replace:!0})}),R.jsx(Es,{path:"/staff-schedule",element:R.jsx(S7,{})}),R.jsx(Es,{path:"/or-schedule",element:R.jsx(H7,{})}),R.jsx(Es,{path:"/staff",element:R.jsx(n9,{})}),R.jsx(Es,{path:"/surgeon",element:R.jsx(o9,{})})]})]})})})]});SO.createRoot(document.getElementById("root")).render(R.jsx(C.StrictMode,{children:R.jsx(s9,{})}));
+`,o9=()=>R.jsxs(Vp,{children:[R.jsx("h2",{children:"Personalized Surgeon Tools"}),R.jsx(r9,{children:"This is where surgeons go to see information about the staffing for their cases. Other features that mighb be here: review stats, view room, etc."})]}),a9=new iA,i9=mv({}),s9=()=>R.jsxs(Zz,{theme:n3,children:[R.jsx(r3,{}),R.jsx(nN,{theme:i9,children:R.jsx(uA,{client:a9,children:R.jsxs(j2,{basename:"/or-schedule",children:[R.jsx(e9,{}),R.jsxs(d2,{children:[R.jsx(Es,{path:"/",element:R.jsx(c2,{to:"/staff-schedule",replace:!0})}),R.jsx(Es,{path:"/staff-schedule",element:R.jsx(S7,{})}),R.jsx(Es,{path:"/or-schedule",element:R.jsx(H7,{})}),R.jsx(Es,{path:"/staff",element:R.jsx(n9,{})}),R.jsx(Es,{path:"/surgeon",element:R.jsx(o9,{})})]})]})})})]});SO.createRoot(document.getElementById("root")).render(R.jsx(C.StrictMode,{children:R.jsx(s9,{})}));
