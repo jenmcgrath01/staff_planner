@@ -1,8 +1,24 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStaffForDate = exports.addStaffMember = exports.saveStaffMember = exports.getStaffMember = exports.getAllStaff = void 0;
+const express_1 = __importDefault(require("express"));
+const router = express_1.default.Router();
 // In-memory storage for development
 let staffMembers = [];
+// Route handlers
+router.get('/', async (req, res) => {
+    const date = req.query.date;
+    const staff = await (0, exports.getStaffForDate)(date);
+    res.json(staff);
+});
+router.get('/:id', async (req, res) => {
+    const staff = await (0, exports.getStaffMember)(req.params.id);
+    res.json(staff);
+});
+// Export functions for use in other files
 const getAllStaff = async () => {
     return staffMembers;
 };
@@ -56,3 +72,4 @@ const getStaffForDate = async (date) => {
     return Array.from(staffMap.values());
 };
 exports.getStaffForDate = getStaffForDate;
+exports.default = router;
