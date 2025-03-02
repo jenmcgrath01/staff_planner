@@ -47,16 +47,16 @@ const StepNumber = styled.div<{ $active?: boolean; $completed?: boolean }>`
   height: 36px;
   border-radius: 50%;
   background: ${props => props.$active 
-    ? 'white'  // Active step: white background
+    ? 'white'
     : props.$completed 
-      ? '#F3F4F6'  // Completed step: light gray background
-      : '#E5E7EB'  // Inactive step: slightly darker gray
+      ? '#F3F4F6'
+      : '#E5E7EB'
   };
   color: ${props => props.$active
-    ? props.theme.colors.primary  // Active step: primary color text
+    ? props.theme.colors.primary
     : props.$completed
-      ? props.theme.colors.text.secondary  // Completed step: secondary text
-      : '#6B7280'  // Inactive step: gray text
+      ? props.theme.colors.text.secondary
+      : '#6B7280'
   };
   display: flex;
   align-items: center;
@@ -64,17 +64,16 @@ const StepNumber = styled.div<{ $active?: boolean; $completed?: boolean }>`
   font-weight: 600;
   margin-bottom: 0.5rem;
   border: 2px solid ${props => props.$active 
-    ? props.theme.colors.primary  // Active step: primary color border
+    ? props.theme.colors.primary
     : props.$completed
-      ? props.theme.colors.text.secondary  // Completed step: secondary border
-      : '#E5E7EB'  // Inactive step: light gray border
+      ? props.theme.colors.text.secondary
+      : '#E5E7EB'
   };
   box-shadow: ${props => props.$active 
     ? '0 2px 4px rgba(0, 0, 0, 0.1)' 
     : 'none'
   };
 
-  /* Add checkmark for completed steps */
   ${props => props.$completed && `
     &::after {
       content: '✓';
@@ -126,7 +125,7 @@ export const StepperNav = () => {
   return (
     <StepperContainer>
       <Steps>
-        {steps.map((step, index) => (
+        {steps.map((step) => (
           <Step 
             key={step.number}
             onClick={() => navigate(step.path)}

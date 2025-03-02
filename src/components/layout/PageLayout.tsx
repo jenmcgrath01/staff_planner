@@ -1,18 +1,31 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const PageContainer = styled.div`
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 2rem;
-  box-sizing: border-box;
+const LayoutContainer = styled.div`
+  min-height: 100vh;  // Full viewport height
+  display: flex;
+  flex-direction: column;
+  width: 100%;  // Ensure full width
 `;
 
-interface PageLayoutProps {
-  children: React.ReactNode;
-}
+const ContentContainer = styled.main`
+  flex: 1;
+  padding: 2rem;
+  width: 100%;  // Ensure full width
+  background: ${props => props.theme.colors.background.main};
 
-export const PageLayout: React.FC<PageLayoutProps> = ({ children }) => {
-  return <PageContainer>{children}</PageContainer>;
+  h1, h2 {
+    margin-top: 0;  // Remove top margin from headings
+    color: ${props => props.theme.colors.text.primary};
+  }
+`;
+
+export const PageLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <LayoutContainer>
+      <ContentContainer>
+        {children}
+      </ContentContainer>
+    </LayoutContainer>
+  );
 }; 

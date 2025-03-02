@@ -13,10 +13,14 @@ import { SkillEditor } from './SkillEditor';
 import { getCases } from '../../services/cases';
 import { DailySummary } from '../common/DailySummary';
 import { PageInstruction } from '../common/PageInstruction';
+import { StepperNav } from '../common/StepperNav';
+import { PageLayout } from '../layout/PageLayout';
 
 const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 `;
 
 const Header = styled.div`
@@ -37,15 +41,24 @@ const Title = styled.h1`
 
 const StaffGridContainer = styled.div`
   width: 100%;
+  max-width: 90vw;
   margin: 0 auto;
   padding: 0 2rem;
+
+  @media (min-width: 2000px) {
+    max-width: 1800px;
+  }
 `;
 
 const StaffGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1rem;
   width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const StaffCard = styled.div`
@@ -161,15 +174,21 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 900px;
-  margin: 0 auto 1rem;
-  padding: 0 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0 2rem;
 `;
 
 const SectionTitle = styled.h2`
   font-size: 1.25rem;
   color: ${props => props.theme.colors.text.primary};
   margin: 0;
+  text-align: left;
+`;
+
+const AddStaffButton = styled(Button)`
+  margin-left: auto;
+  min-width: 160px;
 `;
 
 // Add the sorting helper
@@ -251,131 +270,142 @@ export const StaffScheduleView = () => {
   if (error) return <div>Error loading staff</div>;
 
   return (
-    <Container>
-      <Header>
-        <Title>Staff Schedule</Title>
-        <PageInstruction 
-          text="First, confirm which staff members are available and their schedules for the day."
-          emphasis="First"
-        />
-        <DateSelector 
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-        />
-      </Header>
-
-      <DailySummary 
-        rooms={cases?.map(c => c.room) || []}
-        staffCounts={staffCounts}
+    <PageLayout>
+      <StepperNav 
+        steps={[
+          { label: 'Staff Schedule', path: '/staff-schedule' },
+          { label: 'OR Schedule', path: '/or-schedule' }
+        ]} 
       />
+      <Container>
+        <Header>
+          <Title>Staff Schedule</Title>
+          <PageInstruction 
+            text="First, confirm which staff members are available and their schedules for the day."
+            emphasis="First"
+          />
+          <DateSelector 
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+          />
+        </Header>
 
-      <SectionHeader>
-        <SectionTitle>Staffing Detail</SectionTitle>
-        <Button $variant="primary" onClick={() => setIsCreating(true)}>
-          Add Staff to Schedule
-        </Button>
-      </SectionHeader>
+        <DailySummary 
+          rooms={cases?.map(c => c.room) || []}
+          staffCounts={staffCounts}
+        />
 
-      <StaffGridContainer>
-        <StaffGrid>
-          {sortedStaff?.map((member) => {
-            console.log('Rendering staff member:', {
-              name: member.name,
-              primaryRole: member.primaryRole,
-              secondaryRole: member.secondaryRole
-            });
-            return (
-              <StaffCard key={member.id}>
-                {member.shift && (
-                  <DeleteIcon onClick={() => setDeletingStaff(member)}>
-                    <FaTrash size={14} />
-                  </DeleteIcon>
-                )}
-                <StaffHeader>
-                  <StaffName>{member.name}</StaffName>
-                  <RoleInfo>
-                    ({member.primaryRole}
-                    {member.secondaryRole && `, ${member.secondaryRole}`})
-                  </RoleInfo>
-                </StaffHeader>
-                
-                {member.shift && (
-                  <ShiftInfo onClick={() => setEditingStaff(member)}>
-                    {dayjs(member.shift.start).format('HH:mm')} - {dayjs(member.shift.end).format('HH:mm')}
-                  </ShiftInfo>
-                )}
+        <SectionHeader>
+          <SectionTitle>Staff Detail</SectionTitle>
+          <AddStaffButton 
+            $variant="primary" 
+            onClick={() => setIsCreating(true)}
+          >
+            Add Staff to Schedule
+          </AddStaffButton>
+        </SectionHeader>
 
-                {member.assignments && member.assignments.length > 0 && (
-                  <>
-                    <Divider />
-                    <AssignmentsList>
-                      {member.assignments.map((assignment, index) => {
-                        const surgeonLastName = assignment.surgeon.name.split(' ').pop();
-                        const shortProcedure = assignment.procedure.slice(0, 15) + 
-                          (assignment.procedure.length > 15 ? '...' : '');
-                        
-                        return (
-                          <Assignment key={index}>
-                            <div>
-                              {surgeonLastName} - {shortProcedure}
-                              <AssignmentRole> ({assignment.role})</AssignmentRole>
-                            </div>
-                            <div>
-                              {dayjs(assignment.start).format('HH:mm')}-
-                              {dayjs(assignment.end).format('HH:mm')}
-                            </div>
-                          </Assignment>
-                        );
-                      })}
-                    </AssignmentsList>
-                  </>
-                )}
+        <StaffGridContainer>
+          <StaffGrid>
+            {sortedStaff?.map((member) => {
+              console.log('Rendering staff member:', {
+                name: member.name,
+                primaryRole: member.primaryRole,
+                secondaryRole: member.secondaryRole
+              });
+              return (
+                <StaffCard key={member.id}>
+                  {member.shift && (
+                    <DeleteIcon onClick={() => setDeletingStaff(member)}>
+                      <FaTrash size={14} />
+                    </DeleteIcon>
+                  )}
+                  <StaffHeader>
+                    <StaffName>{member.name}</StaffName>
+                    <RoleInfo>
+                      ({member.primaryRole}
+                      {member.secondaryRole && `, ${member.secondaryRole}`})
+                    </RoleInfo>
+                  </StaffHeader>
+                  
+                  {member.shift && (
+                    <ShiftInfo onClick={() => setEditingStaff(member)}>
+                      {dayjs(member.shift.start).format('HH:mm')} - {dayjs(member.shift.end).format('HH:mm')}
+                    </ShiftInfo>
+                  )}
 
-                {member.skills && member.skills.length > 0 && (
-                  <SkillsList onClick={() => setEditingSkills(member)}>
-                    {member.skills.map((skill) => (
-                      <Skill key={skill}>{skill}</Skill>
-                    ))}
-                  </SkillsList>
-                )}
-              </StaffCard>
-            );
-          })}
-        </StaffGrid>
-      </StaffGridContainer>
-      {editingStaff && (
-        <ShiftEditor
-          staff={editingStaff}
-          onClose={() => setEditingStaff(null)}
-          onSave={handleShiftUpdate}
-          onDelete={handleShiftDelete}
-        />
-      )}
-      {deletingStaff && (
-        <ConfirmationModal
-          title="Delete Shift"
-          message={`Are you sure you want to delete ${deletingStaff.name}'s shift? This will remove their shift assignment and unassign them from any cases.`}
-          onConfirm={() => {
-            handleShiftDelete(deletingStaff.id);
-            setDeletingStaff(null);
-          }}
-          onCancel={() => setDeletingStaff(null)}
-        />
-      )}
-      {isCreating && (
-        <ShiftCreator
-          onClose={() => setIsCreating(false)}
-          onSave={handleCreateShift}
-          date={selectedDate}
-        />
-      )}
-      {editingSkills && (
-        <SkillEditor
-          staff={editingSkills}
-          onClose={() => setEditingSkills(null)}
-          onSave={handleSkillsUpdate}
-        />
-      )}
-    </Container>
+                  {member.assignments && member.assignments.length > 0 && (
+                    <>
+                      <Divider />
+                      <AssignmentsList>
+                        {member.assignments.map((assignment, index) => {
+                          const surgeonLastName = assignment.surgeon.name.split(' ').pop();
+                          const shortProcedure = assignment.procedure.slice(0, 15) + 
+                            (assignment.procedure.length > 15 ? '...' : '');
+                          
+                          return (
+                            <Assignment key={index}>
+                              <div>
+                                {surgeonLastName} - {shortProcedure}
+                                <AssignmentRole> ({assignment.role})</AssignmentRole>
+                              </div>
+                              <div>
+                                {dayjs(assignment.start).format('HH:mm')}-
+                                {dayjs(assignment.end).format('HH:mm')}
+                              </div>
+                            </Assignment>
+                          );
+                        })}
+                      </AssignmentsList>
+                    </>
+                  )}
+
+                  {member.skills && member.skills.length > 0 && (
+                    <SkillsList onClick={() => setEditingSkills(member)}>
+                      {member.skills.map((skill) => (
+                        <Skill key={skill}>{skill}</Skill>
+                      ))}
+                    </SkillsList>
+                  )}
+                </StaffCard>
+              );
+            })}
+          </StaffGrid>
+        </StaffGridContainer>
+        {editingStaff && (
+          <ShiftEditor
+            staff={editingStaff}
+            onClose={() => setEditingStaff(null)}
+            onSave={handleShiftUpdate}
+            onDelete={handleShiftDelete}
+          />
+        )}
+        {deletingStaff && (
+          <ConfirmationModal
+            title="Delete Shift"
+            message={`Are you sure you want to delete ${deletingStaff.name}'s shift? This will remove their shift assignment and unassign them from any cases.`}
+            onConfirm={() => {
+              handleShiftDelete(deletingStaff.id);
+              setDeletingStaff(null);
+            }}
+            onCancel={() => setDeletingStaff(null)}
+          />
+        )}
+        {isCreating && (
+          <ShiftCreator
+            onClose={() => setIsCreating(false)}
+            onSave={handleCreateShift}
+            date={selectedDate}
+          />
+        )}
+        {editingSkills && (
+          <SkillEditor
+            staff={editingSkills}
+            onClose={() => setEditingSkills(null)}
+            onSave={handleSkillsUpdate}
+          />
+        )}
+      </Container>
+    </PageLayout>
   );
 }; 

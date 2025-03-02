@@ -13,9 +13,11 @@ const PlaceholderText = styled.div`
 export const SurgeonTools = () => {
   return (
     <PageLayout>
+      <h2>Personalized Surgeon Tools</h2>
       <PlaceholderText>
-        This is where surgeons go to see information about the staffing for their cases, 
-        queue up a video/backtable, etc.
+        This is where surgeons go to see information about the staffing for their cases.
+
+        Other features that mighb be here: review stats, view room, etc.
       </PlaceholderText>
     </PageLayout>
   );

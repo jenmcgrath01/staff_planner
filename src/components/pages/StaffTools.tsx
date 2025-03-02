@@ -13,9 +13,11 @@ const PlaceholderText = styled.div`
 export const StaffTools = () => {
   return (
     <PageLayout>
+      <h2>Personalized Staff Tools</h2>
       <PlaceholderText>
-        This is where staff could go to see info about their assignments, 
-        sign up for change notifications, etc.
+        This is where staff (RN, CRNA, etc.)could go to see info about their assignments.
+        
+        Features that might be here: sign up for change notifications, etc.
       </PlaceholderText>
     </PageLayout>
   );

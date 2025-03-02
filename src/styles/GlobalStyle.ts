@@ -7,15 +7,28 @@ export const GlobalStyle = createGlobalStyle`
     padding: 0;
   }
 
-  body {
+  html, body, #root {
+    height: 100%;
+    width: 100%;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: ${props => props.theme.typography.fontFamily};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: ${props => props.theme.colors.background.main};
     color: ${props => props.theme.colors.text.primary};
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100vw;
+    max-width: 100%;
   }
 
   button {

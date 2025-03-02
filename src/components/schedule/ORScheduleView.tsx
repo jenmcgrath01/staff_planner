@@ -11,15 +11,32 @@ import { DailySummary } from '../common/DailySummary';
 import { getStaff } from '../../services/staff';
 import { PageInstruction } from '../common/PageInstruction';
 import { Case, CaseAssignment } from '../../types/cases';
+import { StepperNav } from '../common/StepperNav';
+
+const Container = styled.div`
+  width: 100vw;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+`;
+
+const ContentContainer = styled.div`
+  width: 100%;
+  padding: 0 2rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+`;
 
 const Header = styled.div`
+  width: 100%;
   margin-bottom: 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 100%;
-  padding: 0 2rem;
 `;
 
 const Title = styled.h1`
@@ -29,9 +46,8 @@ const Title = styled.h1`
 `;
 
 const ORSection = styled.div`
-  margin-bottom: 2rem;
   width: 100%;
-  padding: 0 2rem;
+  margin-bottom: 2rem;
 `;
 
 const ORTitle = styled.h2`
@@ -44,9 +60,13 @@ const ORTitle = styled.h2`
 
 const CaseGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 1rem;
   width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const CaseCard = styled.div`
@@ -144,6 +164,17 @@ const SkillTag = styled.span`
   color: ${props => props.theme.colors.text.secondary};
 `;
 
+const RoomsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 export const ORScheduleView = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs('2024-02-20'));
   const [editingCase, setEditingCase] = useState<Case | null>(null);
@@ -202,104 +233,116 @@ export const ORScheduleView = () => {
 
   return (
     <PageLayout>
-      <Header>
-        <Title>OR Schedule</Title>
-        <PageInstruction 
-          text="Then, assign the available staff to OR cases."
-          emphasis="Then"
+      <Container>
+        <StepperNav 
+          steps={[
+            { label: 'Staff Schedule', path: '/staff-schedule' },
+            { label: 'OR Schedule', path: '/or-schedule' }
+          ]} 
         />
-        <DateSelector 
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-        />
-      </Header>
+        <ContentContainer>
+          <Header>
+            <Title>OR Schedule</Title>
+            <PageInstruction 
+              text="Next, assign staff to cases in each room."
+              emphasis="Next"
+            />
+            <DateSelector 
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
+            />
+          </Header>
 
-      <DailySummary 
-        rooms={cases?.map(c => c.room) || []}
-        staffCounts={staffCounts}
-      />
+          <DailySummary 
+            rooms={cases?.map(c => c.room) || []}
+            staffCounts={staffCounts}
+          />
 
-      {sortedORs.map(room => (
-        <ORSection key={room}>
-          <ORTitle>{room}</ORTitle>
-          <CaseGrid>
-            {casesByOR![room].map((caseItem) => (
-              <CaseCard key={caseItem.id}>
-                <CaseHeader>
-                  <div>
-                    <SurgeonName>
-                      {caseItem.surgeon.name}
-                      {caseItem.surgeon.subspecialty && ` (${caseItem.surgeon.subspecialty})`}
-                    </SurgeonName>
-                    <CaseTitle>{caseItem.procedure}</CaseTitle>
-                  </div>
-                  <CaseTime>
-                    {dayjs(caseItem.start).format('HH:mm')} - {dayjs(caseItem.end).format('HH:mm')}
-                  </CaseTime>
-                </CaseHeader>
+          <RoomsGrid>
+            {sortedORs.map(room => (
+              <ORSection key={room}>
+                <ORTitle>{room}</ORTitle>
+                <CaseGrid>
+                  {casesByOR![room].map((caseItem) => (
+                    <CaseCard key={caseItem.id}>
+                      <CaseHeader>
+                        <div>
+                          <SurgeonName>
+                            {caseItem.surgeon.name}
+                            {caseItem.surgeon.subspecialty && ` (${caseItem.surgeon.subspecialty})`}
+                          </SurgeonName>
+                          <CaseTitle>{caseItem.procedure}</CaseTitle>
+                        </div>
+                        <CaseTime>
+                          {dayjs(caseItem.start).format('HH:mm')} - {dayjs(caseItem.end).format('HH:mm')}
+                        </CaseTime>
+                      </CaseHeader>
 
-                <StaffAssignment>
-                  {caseItem.assignments?.rn && (
-                    <AssignedStaff>
-                      <StaffInfo>
-                        <strong>RN:</strong> {caseItem.assignments.rn.name}
-                        <StaffRole>
-                          ({caseItem.assignments.rn.primaryRole}
-                          {caseItem.assignments.rn.secondaryRole && 
-                            `, ${caseItem.assignments.rn.secondaryRole}`})
-                        </StaffRole>
-                      </StaffInfo>
-                      {caseItem.assignments.rn.skills?.length > 0 && (
-                        <SkillsList>
-                          {caseItem.assignments.rn.skills.map((skill: string) => (
-                            <SkillTag key={skill}>{skill}</SkillTag>
-                          ))}
-                        </SkillsList>
-                      )}
-                    </AssignedStaff>
-                  )}
+                      <StaffAssignment>
+                        {caseItem.assignments?.rn && (
+                          <AssignedStaff>
+                            <StaffInfo>
+                              <strong>RN:</strong> {caseItem.assignments.rn.name}
+                              <StaffRole>
+                                ({caseItem.assignments.rn.primaryRole}
+                                {caseItem.assignments.rn.secondaryRole && 
+                                  `, ${caseItem.assignments.rn.secondaryRole}`})
+                              </StaffRole>
+                            </StaffInfo>
+                            {caseItem.assignments.rn.skills?.length > 0 && (
+                              <SkillsList>
+                                {caseItem.assignments.rn.skills.map((skill: string) => (
+                                  <SkillTag key={skill}>{skill}</SkillTag>
+                                ))}
+                              </SkillsList>
+                            )}
+                          </AssignedStaff>
+                        )}
 
-                  {caseItem.assignments?.st && (
-                    <AssignedStaff>
-                      <StaffInfo>
-                        <strong>ST:</strong> {caseItem.assignments.st.name}
-                        <StaffRole>
-                          ({caseItem.assignments.st.primaryRole}
-                          {caseItem.assignments.st.secondaryRole && 
-                            `, ${caseItem.assignments.st.secondaryRole}`})
-                        </StaffRole>
-                      </StaffInfo>
-                      {caseItem.assignments.st.skills?.length > 0 && (
-                        <SkillsList>
-                          {caseItem.assignments.st.skills.map((skill: string) => (
-                            <SkillTag key={skill}>{skill}</SkillTag>
-                          ))}
-                        </SkillsList>
-                      )}
-                    </AssignedStaff>
-                  )}
-                </StaffAssignment>
+                        {caseItem.assignments?.st && (
+                          <AssignedStaff>
+                            <StaffInfo>
+                              <strong>ST:</strong> {caseItem.assignments.st.name}
+                              <StaffRole>
+                                ({caseItem.assignments.st.primaryRole}
+                                {caseItem.assignments.st.secondaryRole && 
+                                  `, ${caseItem.assignments.st.secondaryRole}`})
+                              </StaffRole>
+                            </StaffInfo>
+                            {caseItem.assignments.st.skills?.length > 0 && (
+                              <SkillsList>
+                                {caseItem.assignments.st.skills.map((skill: string) => (
+                                  <SkillTag key={skill}>{skill}</SkillTag>
+                                ))}
+                              </SkillsList>
+                            )}
+                          </AssignedStaff>
+                        )}
+                      </StaffAssignment>
 
-                <Button 
-                  $variant="primary"
-                  onClick={() => setEditingCase(caseItem)}
-                  style={{ marginTop: '0.75rem', width: '100%' }}
-                >
-                  Edit Staff
-                </Button>
-              </CaseCard>
+                      <Button 
+                        $variant="primary"
+                        onClick={() => setEditingCase(caseItem)}
+                        style={{ marginTop: '0.75rem', width: '100%' }}
+                      >
+                        Edit Staff
+                      </Button>
+                    </CaseCard>
+                  ))}
+                </CaseGrid>
+              </ORSection>
             ))}
-          </CaseGrid>
-        </ORSection>
-      ))}
+          </RoomsGrid>
 
-      {editingCase && (
-        <CaseStaffEditor
-          caseItem={editingCase}
-          onClose={() => setEditingCase(null)}
-          onSave={handleAssignStaff}
-        />
-      )}
+          {editingCase && (
+            <CaseStaffEditor
+              caseItem={editingCase}
+              onClose={() => setEditingCase(null)}
+              onSave={handleAssignStaff}
+            />
+          )}
+        </ContentContainer>
+      </Container>
     </PageLayout>
   );
 }; 

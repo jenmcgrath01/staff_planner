@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { MainNav } from './MainNav';
+import { getAssetPath } from '../../utils/paths';
+import { Link } from 'react-router-dom';
 
 const HeaderContainer = styled.header`
   background: white;
@@ -31,8 +33,10 @@ export const SimpleHeader = () => {
   return (
     <HeaderContainer>
       <LogoSection>
-        <Logo src="/images/apella-logo.svg" alt="Apella" />
-        <Title>Surgical Team Navigator</Title>
+        <Link to="/">
+          <Logo src="/staff_planner/images/apella-logo.svg" alt="Apella" />
+        </Link>
+        <Title>Team Navigator</Title>
       </LogoSection>
       <MainNav />
     </HeaderContainer>

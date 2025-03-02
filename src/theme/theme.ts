@@ -1,16 +1,16 @@
 export const theme = {
   colors: {
-    primary: '#0EA5E9',
-    secondary: '#6366F1',
+    primary: '#0066F5',
+    secondary: '#6B7280',
     border: '#E5E7EB',
     background: {
       main: '#FFFFFF',
       light: '#F9FAFB',
-      gradient: 'linear-gradient(180deg, #F0F9FF 0%, #E0F2FE 100%)'
+      gradient: 'linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%)'
     },
     text: {
       primary: '#111827',
-      secondary: '#4B5563'
+      secondary: '#6B7280'
     }
   },
   typography: {

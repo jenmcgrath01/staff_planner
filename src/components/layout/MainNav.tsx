@@ -59,10 +59,10 @@ export const MainNav = () => {
   const path = location.pathname;
 
   const isActive = (route: string) => {
-    if (route === '/manager') {
-      return path.startsWith('/manager') || path === '/staff-schedule' || path === '/or-schedule';
+    if (route === '/staff-schedule') {
+      return path === '/staff-schedule' || path === '/or-schedule';
     }
-    return path.startsWith(route);
+    return path === route;
   };
 
   return (
@@ -72,14 +72,20 @@ export const MainNav = () => {
         Menu
       </MenuButton>
       <NavList $isOpen={isOpen}>
-        <NavItem $active={isActive('/manager')}>
-          <Link to="/manager" onClick={() => setIsOpen(false)}>Manager/Charge Tools</Link>
+        <NavItem $active={isActive('/staff-schedule')}>
+          <Link to="/staff-schedule" onClick={() => setIsOpen(false)}>
+            Manager/Charge Tools
+          </Link>
         </NavItem>
         <NavItem $active={isActive('/staff')}>
-          <Link to="/staff" onClick={() => setIsOpen(false)}>Staff Tools</Link>
+          <Link to="/staff" onClick={() => setIsOpen(false)}>
+            Staff Tools
+          </Link>
         </NavItem>
         <NavItem $active={isActive('/surgeon')}>
-          <Link to="/surgeon" onClick={() => setIsOpen(false)}>Surgeon Tools</Link>
+          <Link to="/surgeon" onClick={() => setIsOpen(false)}>
+            Surgeon Tools
+          </Link>
         </NavItem>
       </NavList>
     </NavContainer>
