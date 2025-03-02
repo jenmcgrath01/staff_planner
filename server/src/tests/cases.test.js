@@ -9,7 +9,7 @@ describe('Cases API', () => {
         .expect(200);
 
       expect(Array.isArray(res.body)).toBeTruthy();
-      expect(res.body.length).toBe(3);
+      expect(res.body.length).toBe(5);
       expect(res.body[0]).toHaveProperty('room', 'OR1');
     });
   });

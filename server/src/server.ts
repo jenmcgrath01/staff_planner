@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import staffRoutes from './routes/staff';
+import casesRoutes from './routes/cases';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,11 +14,14 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Your existing API routes will go here
-app.get('/api/staff', (req, res) => {
-  res.json([]);  // Temporary empty response
-});
+// Routes
+app.use('/api/staff', staffRoutes);
+app.use('/api/cases', casesRoutes);
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+export default app;
