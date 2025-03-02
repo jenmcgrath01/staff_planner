@@ -160,7 +160,7 @@ export const ORScheduleView = () => {
 
   const handleAssignStaff = async (caseId: string, assignments: { rn?: string; st?: string }) => {
     await updateCaseAssignments(caseId, assignments);
-    queryClient.invalidateQueries(['cases', selectedDate.format('YYYY-MM-DD')]);
+    queryClient.invalidateQueries({ queryKey: ['cases', selectedDate.format('YYYY-MM-DD')] });
   };
 
   // Group cases by OR

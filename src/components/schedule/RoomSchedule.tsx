@@ -119,10 +119,8 @@ export const RoomSchedule: React.FC<RoomScheduleProps> = ({ cases, roomName }) =
             <CaseTitle>{surgicalCase.procedure}</CaseTitle>
             <CaseDetail>Room: {surgicalCase.room}</CaseDetail>
             <CaseDetail>
-              Time: {dayjs(surgicalCase.startTime).format('HH:mm')} - {
-                dayjs(surgicalCase.startTime)
-                  .add(surgicalCase.duration, 'minute')
-                  .format('HH:mm')
+              Time: {dayjs(surgicalCase.start).format('HH:mm')} - {
+                dayjs(surgicalCase.end).format('HH:mm')
               }
             </CaseDetail>
             <CaseDetail>

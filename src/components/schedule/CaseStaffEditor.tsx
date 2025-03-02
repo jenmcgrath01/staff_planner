@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useQuery } from '@tanstack/react-query';
 import { getStaff } from '../../services/staff';
 import { Case } from '../../types/cases';
@@ -105,7 +105,7 @@ const Select = styled.select`
 const RoomSummary = styled.div`
   margin: 1rem 0;
   padding: 1rem;
-  background: ${props => props.theme.colors.background.secondary};
+  background: ${props => props.theme.colors.background.light};
   border-radius: 4px;
   font-size: 0.875rem;
 `;
@@ -139,6 +139,8 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
   onClose,
   onSave
 }) => {
+  const theme = useTheme();
+
   console.log('Case details:', {
     procedure: caseItem.procedure,
     start: caseItem.start,
@@ -182,7 +184,7 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
   }
 
   const eligibleRNs = availableStaff?.filter(staff => 
-    staff.primaryRole === 'RN' || staff.secondaryRole === 'RN'
+    staff.primaryRole === 'RN' || staff.secondaryRole === 'ST'
   ) || [];
 
   const eligibleSTs = availableStaff?.filter(staff => 
@@ -234,7 +236,10 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
           />
           <div>
             <div>Apply to all cases in {caseItem.room}</div>
-            <div style={{ fontSize: '0.75rem', color: props => props.theme.colors.text.secondary }}>
+            <div style={{ 
+              fontSize: '0.75rem', 
+              color: theme.colors.text.secondary 
+            }}>
               Staff will be assigned to all {roomCases.length} cases in this room
             </div>
           </div>
@@ -263,7 +268,7 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
               <option key={staff.id} value={staff.id}>
                 {staff.name} ({staff.primaryRole}
                 {staff.secondaryRole && ` + ${staff.secondaryRole}`})
-                {staff.skills.length > 0 && ` - ${staff.skills.join(', ')}`}
+                {staff.skills && staff.skills.length > 0 && ` - ${staff.skills.join(', ')}`}
               </option>
             ))}
           </Select>
@@ -275,12 +280,12 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
             value={selectedST}
             onChange={(e) => setSelectedST(e.target.value)}
           >
-            <option value="">Select Scrub Tech...</option>
+            <option value="">Select ST...</option>
             {eligibleSTs.map(staff => (
               <option key={staff.id} value={staff.id}>
                 {staff.name} ({staff.primaryRole}
                 {staff.secondaryRole && ` + ${staff.secondaryRole}`})
-                {staff.skills.length > 0 && ` - ${staff.skills.join(', ')}`}
+                {staff.skills && staff.skills.length > 0 && ` - ${staff.skills.join(', ')}`}
               </option>
             ))}
           </Select>

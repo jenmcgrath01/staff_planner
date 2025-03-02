@@ -1,5 +1,6 @@
 import { api } from './api';
-import { Case, Surgeon } from '../types/schedule';
+import { Case } from '../types/cases';
+import { Surgeon } from '../types/staff';
 
 export const getCases = async (date: string): Promise<Case[]> => {
   console.log('Getting cases for date:', date);

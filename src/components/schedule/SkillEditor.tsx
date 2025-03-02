@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Staff } from '../../types/staff';
 
 const Modal = styled.div`
   position: fixed;

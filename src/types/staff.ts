@@ -23,4 +23,11 @@ export interface Staff {
     end: string;
     role: string;
   }>;
+}
+
+export interface Surgeon {
+  id: string;
+  name: string;
+  specialty: string;
+  subspecialty: string;
 } 
