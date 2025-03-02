@@ -692,7 +692,7 @@ export default theme;`}function ty(e={},...t){const{breakpoints:r,mixins:o={},sp
   max-width: 600px;
   margin: 0 auto;
   padding: 0 1rem;
-`,Pg=[{number:1,label:"Staff Schedule",path:"/staff-schedule",description:""},{number:2,label:"OR Assignments",path:"/or-schedule",description:""}],QM=()=>{var o;const e=Ly(),t=vo(),r=Pg.findIndex(i=>i.path===t.pathname)+1;return R.jsxs(Y8,{children:[R.jsx(q8,{children:Pg.map(i=>R.jsxs(W8,{onClick:()=>e(i.path),$active:r===i.number,children:[R.jsx(G8,{$active:r===i.number,$completed:r>i.number,children:i.number}),R.jsx(K8,{$active:r===i.number,children:i.label})]},i.number))}),R.jsx(Q8,{children:(o=Pg[r-1])==null?void 0:o.description})]})},X8=Se.div`
+`,Pg=[{number:1,label:"Staff Schedule",path:"staff-schedule",description:""},{number:2,label:"Case Assignments",path:"or-schedule",description:""}],QM=()=>{var o;const e=Ly(),t=vo(),r=Pg.findIndex(i=>i.path===t.pathname)+1;return R.jsxs(Y8,{children:[R.jsx(q8,{children:Pg.map(i=>R.jsxs(W8,{onClick:()=>e(i.path),$active:r===i.number,children:[R.jsx(G8,{$active:r===i.number,$completed:r>i.number,children:i.number}),R.jsx(K8,{$active:r===i.number,children:i.label})]},i.number))}),R.jsx(Q8,{children:(o=Pg[r-1])==null?void 0:o.description})]})},X8=Se.div`
   min-height: 100vh;  // Full viewport height
   display: flex;
   flex-direction: column;
