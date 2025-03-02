@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [react()],
   base: '/staff_planner/',
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    assetsDir: 'staff_planner/assets',
+    rollupOptions: {
+      output: {
+        entryFileNames: 'staff_planner/assets/[name].[hash].js',
+        chunkFileNames: 'staff_planner/assets/[name].[hash].js',
+        assetFileNames: 'staff_planner/assets/[name].[hash].[ext]'
+      }
+    }
   }
 })
