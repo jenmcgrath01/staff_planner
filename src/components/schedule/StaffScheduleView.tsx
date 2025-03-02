@@ -271,12 +271,7 @@ export const StaffScheduleView = () => {
 
   return (
     <PageLayout>
-      <StepperNav 
-        steps={[
-          { label: 'Staff Schedule', path: '/staff-schedule' },
-          { label: 'OR Schedule', path: '/or-schedule' }
-        ]} 
-      />
+      <StepperNav />
       <Container>
         <Header>
           <Title>Staff Schedule</Title>
