@@ -1,5 +1,16 @@
 services:
   - type: web
+    name: staff-planner-api
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false  # Let Render manage this
+
+  - type: web
     name: staff-planner-frontend
     env: static
     buildCommand: cd client && npm install && npm run build
@@ -7,12 +18,7 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://staff-planner-api.onrender.com  # Will be your backend URL
-
-  - type: web
-    name: staff-planner-api
-    env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && node server.js
-    envVars:
-      - key: NODE_ENV
-        value: production 
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html 
