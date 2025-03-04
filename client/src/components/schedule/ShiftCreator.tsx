@@ -198,7 +198,7 @@ export const ShiftCreator: React.FC<ShiftCreatorProps> = ({ onClose, onSave, dat
       try {
         const result = await getStaffNames(date.format('YYYY-MM-DD'));
         console.log('API Response:', result);
-        return result;
+        return Array.isArray(result) ? result : [];
       } catch (err) {
         console.error('Error fetching staff names:', err);
         throw err;
@@ -206,10 +206,12 @@ export const ShiftCreator: React.FC<ShiftCreatorProps> = ({ onClose, onSave, dat
     }
   });
 
-  const filteredStaff = staffNames?.filter(staff => 
-    staff.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    !staff.hasShift
-  );
+  const filteredStaff = Array.isArray(staffNames) 
+    ? staffNames.filter(staff => 
+        staff.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !staff.hasShift
+      )
+    : [];
 
   console.log('Staff Names:', staffNames);
   console.log('Search Term:', searchTerm);

@@ -58,12 +58,25 @@ export const createStaffShift = async (
 
 export const getStaffNames = async (date: string): Promise<StaffName[]> => {
   try {
-    console.log('Calling /api/staff/names');
-    const response = await api.get('/api/staff/names', {
-      params: { date }
-    });
-    console.log('Response:', response);
-    return response.data;
+    console.log('Fetching staff names for date:', date);
+    // Use the regular staff endpoint instead
+    const response = await api.get(`/api/staff?date=${date}`);
+    console.log('Raw staff response:', response.data);
+    
+    // Transform the full staff data into StaffName format
+    const staffNames = Array.isArray(response.data) 
+      ? response.data.map((staff: Staff) => ({
+          id: staff.id,
+          name: staff.name,
+          primaryRole: staff.primaryRole,
+          secondaryRole: staff.secondaryRole,
+          hasShift: Boolean(staff.shift),
+          status: staff.status
+        }))
+      : [];
+    
+    console.log('Transformed staff names:', staffNames);
+    return staffNames;
   } catch (error) {
     console.error('Service error:', error);
     throw error;
