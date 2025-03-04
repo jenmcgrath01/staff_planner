@@ -274,11 +274,13 @@ export const StaffScheduleView = () => {
       <StepperNav />
       <Container>
         <Header>
-          <Title>Staff Schedule</Title>
+          <Title>Set Today's Team Roster</Title>
           <PageInstruction 
             text="First, confirm which staff members are available and their schedules for the day."
             emphasis="First"
           />
+          <i>Apella will detect who usually works this day to get your started!
+          </i>
           <DateSelector 
             selectedDate={selectedDate}
             onDateChange={setSelectedDate}
@@ -291,12 +293,12 @@ export const StaffScheduleView = () => {
         />
 
         <SectionHeader>
-          <SectionTitle>Staff Detail</SectionTitle>
+          <SectionTitle>Staff Roster</SectionTitle>
           <AddStaffButton 
             $variant="primary" 
             onClick={() => setIsCreating(true)}
           >
-            Add Staff to Schedule
+            Add Team Member
           </AddStaffButton>
         </SectionHeader>
 

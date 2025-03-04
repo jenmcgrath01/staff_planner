@@ -164,20 +164,67 @@ const SkillTag = styled.span`
   color: ${props => props.theme.colors.text.secondary};
 `;
 
+const Section = styled.div`
+  width: 100%;
+  margin-bottom: 2rem;
+`;
+
 const RoomsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
   width: 100%;
+  margin-top: 0;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
 `;
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 1rem;
+`;
+
+const ModalContent = styled.div`
+  background: ${props => props.theme.colors.background.main};
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  margin: auto;
+
+  @media (max-height: 700px) {
+    margin: 2rem auto;
+  }
+`;
+
+const ORHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
 export const ORScheduleView = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs('2024-02-20'));
-  const [editingCase, setEditingCase] = useState<Case | null>(null);
+  const [editingRoom, setEditingRoom] = useState<{ room: string; cases: Case[] } | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [roomCases, setRoomCases] = useState<Case[]>([]);
+  const [showStaffEditor, setShowStaffEditor] = useState(false);
 
   const { data: cases, isLoading, error } = useQuery<Case[], Error>({
     queryKey: ['cases', selectedDate.format('YYYY-MM-DD')],
@@ -189,8 +236,13 @@ export const ORScheduleView = () => {
 
   const queryClient = useQueryClient();
 
-  const handleAssignStaff = async (caseId: string, assignments: { rn?: string; st?: string }) => {
-    await updateCaseAssignments(caseId, assignments);
+  const handleAssignStaff = async (room: string, assignments: { rn?: string; st?: string }) => {
+    const roomCases = casesByOR![room];
+    await Promise.all(
+      roomCases.map(caseItem => 
+        updateCaseAssignments(caseItem.id, assignments)
+      )
+    );
     queryClient.invalidateQueries({ queryKey: ['cases', selectedDate.format('YYYY-MM-DD')] });
   };
 
@@ -223,6 +275,12 @@ export const ORScheduleView = () => {
     st: staffData?.filter(s => s.shift && (s.primaryRole === 'ST' || s.secondaryRole === 'ST')).length || 0
   };
 
+  const handleEditStaff = (room: string, cases: Case[]) => {
+    setSelectedRoom(room);
+    setRoomCases(cases);
+    setShowStaffEditor(true);
+  };
+
   if (isLoading) {
     return <div>Loading cases...</div>;
   }
@@ -237,26 +295,37 @@ export const ORScheduleView = () => {
         <StepperNav />
         <ContentContainer>
           <Header>
-            <Title>OR Schedule</Title>
+            <Title>Case Assignments</Title>
             <PageInstruction 
               text="Next, assign staff to cases in each room."
               emphasis="Next"
             />
+            <i> Apella will pre-assign staff based on historical patterns or your professional development goals</i>
             <DateSelector 
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
             />
           </Header>
 
-          <DailySummary 
-            rooms={cases?.map(c => c.room) || []}
-            staffCounts={staffCounts}
-          />
+          <Section>
+            <DailySummary 
+              rooms={cases?.map(c => c.room) || []}
+              staffCounts={staffCounts}
+            />
+          </Section>
 
           <RoomsGrid>
             {sortedORs.map(room => (
               <ORSection key={room}>
-                <ORTitle>{room}</ORTitle>
+                <ORHeader>
+                  <ORTitle>{room}</ORTitle>
+                  <Button 
+                    $variant="primary"
+                    onClick={() => handleEditStaff(room, casesByOR![room])}
+                  >
+                    Edit Staff
+                  </Button>
+                </ORHeader>
                 <CaseGrid>
                   {casesByOR![room].map((caseItem) => (
                     <CaseCard key={caseItem.id}>
@@ -314,14 +383,6 @@ export const ORScheduleView = () => {
                           </AssignedStaff>
                         )}
                       </StaffAssignment>
-
-                      <Button 
-                        $variant="primary"
-                        onClick={() => setEditingCase(caseItem)}
-                        style={{ marginTop: '0.75rem', width: '100%' }}
-                      >
-                        Edit Staff
-                      </Button>
                     </CaseCard>
                   ))}
                 </CaseGrid>
@@ -329,12 +390,21 @@ export const ORScheduleView = () => {
             ))}
           </RoomsGrid>
 
-          {editingCase && (
-            <CaseStaffEditor
-              caseItem={editingCase}
-              onClose={() => setEditingCase(null)}
-              onSave={handleAssignStaff}
-            />
+          {showStaffEditor && selectedRoom && roomCases.length > 0 && (
+            <ModalOverlay>
+              <ModalContent>
+                <CaseStaffEditor
+                  room={selectedRoom}
+                  cases={roomCases}
+                  onClose={() => {
+                    setShowStaffEditor(false);
+                    setSelectedRoom(null);
+                    setRoomCases([]);
+                  }}
+                  onSave={handleAssignStaff}
+                />
+              </ModalContent>
+            </ModalOverlay>
           )}
         </ContentContainer>
       </Container>

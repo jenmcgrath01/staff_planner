@@ -69,12 +69,9 @@ export const DailySummary: React.FC<DailySummaryProps> = ({ rooms, staffCounts }
 
   return (
     <Container>
-      <Title>Daily Summary</Title>
+      <Title>Daily Summary, Errors, Tips</Title>
       <StatsSection>
-        <RoomCount>
-          <StatLabel>Operating Rooms</StatLabel>
-          <StatValue $status="sufficient">{uniqueRooms} rooms</StatValue>
-        </RoomCount>
+
         
         <StaffingRow>
           <StatItem>

@@ -15,9 +15,11 @@ const Modal = styled.div`
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 1000;
+  overflow-y: auto;
+  padding: 2rem 1rem;
 `;
 
 const ModalContent = styled.div`
@@ -26,6 +28,10 @@ const ModalContent = styled.div`
   border-radius: 8px;
   width: 100%;
   max-width: 500px;
+  max-height: min(800px, calc(100vh - 4rem));
+  overflow-y: auto;
+  margin: auto;
+  position: relative;
 `;
 
 const Title = styled.h3`
@@ -124,55 +130,131 @@ const Checkbox = styled.input`
   margin-right: 0.5rem;
 `;
 
+const EditorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding-top: 1rem;
+  border-top: 1px solid ${props => props.theme.colors.border};
+`;
+
 interface CaseStaffEditorProps {
-  caseItem: Case;
+  room: string;
+  cases: Case[];
   onClose: () => void;
-  onSave: (caseId: string, assignments: { 
+  onSave: (room: string, assignments: { 
     rn?: string;
     st?: string;
-    applyToRoom?: boolean;
+    applyToAll?: boolean;
+    individualAssignments?: Array<{
+      caseId: string;
+      rn?: string;
+      st?: string;
+    }>;
   }) => Promise<void>;
 }
 
 export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
-  caseItem,
+  room,
+  cases,
   onClose,
   onSave
 }) => {
   const theme = useTheme();
 
-  console.log('Case details:', {
-    procedure: caseItem.procedure,
-    start: caseItem.start,
-    parsedDate: dayjs(caseItem.start).format('YYYY-MM-DD')
-  });
+  console.log('CaseStaffEditor received:', { room, cases });
 
-  const [selectedRN, setSelectedRN] = useState<string>(caseItem.assignments?.rn?.id || '');
-  const [selectedST, setSelectedST] = useState<string>(caseItem.assignments?.st?.id || '');
-  const [applyToRoom, setApplyToRoom] = useState(false);
+  if (!room) {
+    console.error('CaseStaffEditor: room prop is required');
+    return (
+      <Modal onClick={onClose}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <Title>Configuration Error</Title>
+          <div>Unable to load editor: Room information is missing.</div>
+          <ButtonContainer>
+            <Button onClick={onClose}>Close</Button>
+          </ButtonContainer>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (!cases) {
+    console.error('CaseStaffEditor: cases prop is required');
+    return (
+      <Modal onClick={onClose}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <Title>Error Loading Cases</Title>
+          <div>Unable to load cases data for Room {room}.</div>
+          <ButtonContainer>
+            <Button onClick={onClose}>Close</Button>
+          </ButtonContainer>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (!Array.isArray(cases)) {
+    console.error('Cases is not an array:', cases);
+    return (
+      <Modal onClick={onClose}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <Title>Error Loading Cases</Title>
+          <div>Invalid cases data format. Please try again.</div>
+          <ButtonContainer>
+            <Button onClick={onClose}>Close</Button>
+          </ButtonContainer>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (cases.length === 0) {
+    return (
+      <Modal onClick={onClose}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <Title>No Cases Found</Title>
+          <div>There are no cases scheduled for Room {room}.</div>
+          <ButtonContainer>
+            <Button onClick={onClose}>Close</Button>
+          </ButtonContainer>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  const [applyToAll, setApplyToAll] = useState(true);
+  const [globalRN, setGlobalRN] = useState<string>('');
+  const [globalST, setGlobalST] = useState<string>('');
+  const [individualAssignments, setIndividualAssignments] = useState(
+    cases.map(c => ({
+      caseId: c.id,
+      rn: c.assignments?.rn?.id || '',
+      st: c.assignments?.st?.id || ''
+    }))
+  );
   const [error, setError] = useState<string | null>(null);
   
   const { data: availableStaff, isLoading, error: staffError } = useQuery({
-    queryKey: ['staff', dayjs(caseItem.start).format('YYYY-MM-DD')],
+    queryKey: ['staff', dayjs(cases[0].start).format('YYYY-MM-DD')],
     queryFn: async () => {
-      const date = dayjs(caseItem.start).format('YYYY-MM-DD');
+      const date = dayjs(cases[0].start).format('YYYY-MM-DD');
       console.log('Querying staff for date:', date);
       const staff = await getStaff(date);
       return staff;
     }
   });
 
-  const { data: cases } = useQuery({
-    queryKey: ['cases', dayjs(caseItem.start).format('YYYY-MM-DD')],
-    queryFn: () => getCases(dayjs(caseItem.start).format('YYYY-MM-DD'))
-  });
-
-  const roomCases = cases?.filter(c => c.room === caseItem.room) || [];
-  const lastCase = roomCases.sort((a, b) => 
-    dayjs(b.end).valueOf() - dayjs(a.end).valueOf()
-  )[0];
-
-  // Add error handling
   if (isLoading) return <div>Loading staff...</div>;
   if (staffError) {
     console.error('Error loading staff:', staffError);
@@ -191,19 +273,25 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
     staff.primaryRole === 'ST' || staff.secondaryRole === 'ST'
   ) || [];
 
-  console.log('Case date:', dayjs(caseItem.start).format('YYYY-MM-DD'));
+  console.log('Case date:', dayjs(cases[0]?.start).format('YYYY-MM-DD'));
   console.log('Available staff:', availableStaff);
   console.log('Eligible RNs:', eligibleRNs);
   console.log('Eligible STs:', eligibleSTs);
 
   const handleSave = async () => {
     try {
-      setError(null);
-      await onSave(caseItem.id, {
-        rn: selectedRN || undefined,
-        st: selectedST || undefined,
-        applyToRoom
-      });
+      if (applyToAll) {
+        await onSave(room, {
+          rn: globalRN,
+          st: globalST,
+          applyToAll: true
+        });
+      } else {
+        await onSave(room, {
+          applyToAll: false,
+          individualAssignments
+        });
+      }
       onClose();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to assign staff');
@@ -213,94 +301,128 @@ export const CaseStaffEditor: React.FC<CaseStaffEditorProps> = ({
   return (
     <Modal onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>
-        <Title>Assign Staff to Case</Title>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <strong>{caseItem.procedure}</strong>
-          <div>Room: {caseItem.room}</div>
-          <div>Time: {dayjs(caseItem.start).format('HH:mm')} - {dayjs(caseItem.end).format('HH:mm')}</div>
-          <div>Surgeon: {caseItem.surgeon.name}</div>
-        </div>
-
+        <Title>Assign Staff to Cases in {room}</Title>
+        
         <RoomSummary>
-          <strong>Room {caseItem.room} Schedule:</strong>
-          <div>{roomCases.length} cases scheduled</div>
-          <div>First case starts at {dayjs(roomCases[0]?.start).format('HH:mm')}</div>
-          <div>Last case ends at {dayjs(lastCase?.end).format('HH:mm')}</div>
+          <strong>Room {room} Schedule:</strong>
+          <div>{cases.length} cases scheduled</div>
+          <div>First case starts at {dayjs(cases[0]?.start).format('HH:mm')}</div>
+          <div>Last case ends at {dayjs(cases[cases.length - 1]?.end).format('HH:mm')}</div>
         </RoomSummary>
 
         <AssignmentOption>
           <Checkbox
             type="checkbox"
-            checked={applyToRoom}
-            onChange={(e) => setApplyToRoom(e.target.checked)}
+            checked={applyToAll}
+            onChange={(e) => setApplyToAll(e.target.checked)}
           />
           <div>
-            <div>Apply to all cases in {caseItem.room}</div>
+            <div>Apply to all cases in {room}</div>
             <div style={{ 
               fontSize: '0.75rem', 
               color: theme.colors.text.secondary 
             }}>
-              Staff will be assigned to all {roomCases.length} cases in this room
+              Staff will be assigned to all {cases.length} cases in this room
             </div>
           </div>
         </AssignmentOption>
 
-        {error && (
-          <div style={{ 
-            color: '#991B1B',
-            background: '#FEE2E2',
-            padding: '0.75rem',
-            borderRadius: '4px',
-            marginBottom: '1rem'
-          }}>
-            {error}
+        {applyToAll ? (
+          <>
+            <RoleSection>
+              <RoleTitle>RN Assignment for All Cases</RoleTitle>
+              <Select
+                value={globalRN}
+                onChange={(e) => setGlobalRN(e.target.value)}
+              >
+                <option value="">Select RN...</option>
+                {eligibleRNs.map(staff => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.name} ({staff.primaryRole}
+                    {staff.secondaryRole && `, ${staff.secondaryRole}`})
+                  </option>
+                ))}
+              </Select>
+            </RoleSection>
+
+            <RoleSection>
+              <RoleTitle>Scrub Tech Assignment for All Cases</RoleTitle>
+              <Select
+                value={globalST}
+                onChange={(e) => setGlobalST(e.target.value)}
+              >
+                <option value="">Select ST...</option>
+                {eligibleSTs.map(staff => (
+                  <option key={staff.id} value={staff.id}>
+                    {staff.name} ({staff.primaryRole}
+                    {staff.secondaryRole && `, ${staff.secondaryRole}`})
+                  </option>
+                ))}
+              </Select>
+            </RoleSection>
+          </>
+        ) : (
+          <div>
+            {cases.map((caseItem, index) => (
+              <div key={caseItem.id} style={{ 
+                marginBottom: '1.5rem',
+                padding: '1rem',
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: '4px'
+              }}>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <strong>{caseItem.procedure}</strong>
+                  <div>{dayjs(caseItem.start).format('HH:mm')} - {dayjs(caseItem.end).format('HH:mm')}</div>
+                  <div>Surgeon: {caseItem.surgeon.name}</div>
+                </div>
+
+                <Select
+                  value={individualAssignments[index].rn}
+                  onChange={(e) => {
+                    const newAssignments = [...individualAssignments];
+                    newAssignments[index].rn = e.target.value;
+                    setIndividualAssignments(newAssignments);
+                  }}
+                >
+                  <option value="">Select RN...</option>
+                  {eligibleRNs.map(staff => (
+                    <option key={staff.id} value={staff.id}>
+                      {staff.name} ({staff.primaryRole})
+                    </option>
+                  ))}
+                </Select>
+
+                <Select
+                  value={individualAssignments[index].st}
+                  onChange={(e) => {
+                    const newAssignments = [...individualAssignments];
+                    newAssignments[index].st = e.target.value;
+                    setIndividualAssignments(newAssignments);
+                  }}
+                  style={{ marginTop: '0.5rem' }}
+                >
+                  <option value="">Select ST...</option>
+                  {eligibleSTs.map(staff => (
+                    <option key={staff.id} value={staff.id}>
+                      {staff.name} ({staff.primaryRole})
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            ))}
           </div>
         )}
 
-        <RoleSection>
-          <RoleTitle>RN Assignment</RoleTitle>
-          <Select
-            value={selectedRN}
-            onChange={(e) => setSelectedRN(e.target.value)}
-          >
-            <option value="">Select RN...</option>
-            {eligibleRNs.map(staff => (
-              <option key={staff.id} value={staff.id}>
-                {staff.name} ({staff.primaryRole}
-                {staff.secondaryRole && ` + ${staff.secondaryRole}`})
-                {staff.skills && staff.skills.length > 0 && ` - ${staff.skills.join(', ')}`}
-              </option>
-            ))}
-          </Select>
-        </RoleSection>
-
-        <RoleSection>
-          <RoleTitle>Scrub Tech Assignment</RoleTitle>
-          <Select
-            value={selectedST}
-            onChange={(e) => setSelectedST(e.target.value)}
-          >
-            <option value="">Select ST...</option>
-            {eligibleSTs.map(staff => (
-              <option key={staff.id} value={staff.id}>
-                {staff.name} ({staff.primaryRole}
-                {staff.secondaryRole && ` + ${staff.secondaryRole}`})
-                {staff.skills && staff.skills.length > 0 && ` - ${staff.skills.join(', ')}`}
-              </option>
-            ))}
-          </Select>
-        </RoleSection>
-
-        <ButtonGroup>
+        <ButtonContainer>
           <Button onClick={onClose}>Cancel</Button>
           <Button 
             $variant="primary"
             onClick={handleSave}
-            disabled={!selectedRN && !selectedST}
+            disabled={applyToAll ? (!globalRN && !globalST) : false}
           >
-            Save
+            Save Assignments
           </Button>
-        </ButtonGroup>
+        </ButtonContainer>
       </ModalContent>
     </Modal>
   );

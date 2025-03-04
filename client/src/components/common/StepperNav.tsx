@@ -101,7 +101,7 @@ const StepDescription = styled.div`
 const steps = [
   {
     number: 1,
-    label: 'Staff Schedule',
+    label: 'Staff Roster',
     path: 'staff-schedule',
     description: ''
   },

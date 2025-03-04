@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { FaBars } from 'react-icons/fa';
+import type { IconBaseProps } from 'react-icons';
 
 const NavContainer = styled.nav`
   position: relative;
@@ -68,7 +69,7 @@ export const MainNav = () => {
   return (
     <NavContainer>
       <MenuButton onClick={() => setIsOpen(!isOpen)}>
-        <FaBars size={16} />
+        <FaBars {...({size: 16} as IconBaseProps)} />
         Menu
       </MenuButton>
       <NavList $isOpen={isOpen}>
