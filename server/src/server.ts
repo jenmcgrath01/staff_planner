@@ -14,6 +14,15 @@ const allowedOrigins = [
   'https://staff-planner-client.onrender.com'  // production client URL
 ];
 
+// Add this before your CORS configuration
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  if (req.method === 'POST') {
+    console.log('POST body:', req.body);
+  }
+  next();
+});
+
 // Fix the CORS configuration
 app.use(cors({
   origin: (origin, callback) => {
