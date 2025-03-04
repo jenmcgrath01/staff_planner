@@ -9,7 +9,7 @@ const port = process.env.PORT || 3001;
 const allowedOrigins = [
   'http://localhost:5173',  // dev
   'http://localhost:4173',  // preview
-  'http://localhost:4174'
+  'http://localhost:4174',
   'http://localhost:5174',  // additional dev port
   'https://staff-planner-client.onrender.com'  // production client URL
 ];
