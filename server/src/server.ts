@@ -6,9 +6,23 @@ import casesRoutes from './routes/cases';
 const app = express();
 const port = process.env.PORT || 3001;
 
+const allowedOrigins = [
+  'http://localhost:5173',  // dev
+  'http://localhost:4173',  // preview
+  'http://localhost:4174'
+  'http://localhost:5174',  // additional dev port
+  'https://staff-planner-client.onrender.com'  // production client URL
+];
+
 // Fix the CORS configuration
 app.use(cors({
-  origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://localhost:5174'],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 

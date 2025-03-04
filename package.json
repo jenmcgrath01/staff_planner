@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.0.0"
+  },
+  "dependencies": {
+    "@mui/material": "^5.15.11"
   }
 }
