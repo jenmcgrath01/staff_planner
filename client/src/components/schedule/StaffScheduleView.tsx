@@ -197,6 +197,11 @@ const getLastName = (fullName: string) => {
   return parts[parts.length - 1];
 };
 
+// Add this component at the top level of the file, before the styled components
+const TrashIcon = () => {
+  return React.createElement(FaTrash, { size: 14 });
+};
+
 export const StaffScheduleView = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs('2024-02-20'));
   const [editingStaff, setEditingStaff] = useState<Staff | null>(null);
@@ -314,7 +319,7 @@ export const StaffScheduleView = () => {
                 <StaffCard key={member.id}>
                   {member.shift && (
                     <DeleteIcon onClick={() => setDeletingStaff(member)}>
-                      <FaTrash size={14} />
+                      <TrashIcon />
                     </DeleteIcon>
                   )}
                   <StaffHeader>
