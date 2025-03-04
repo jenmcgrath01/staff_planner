@@ -12,6 +12,11 @@ console.log('Initial staff members:',
     }))
 );
 
+router.use((req, res, next) => {
+  console.log(`Staff route hit: ${req.method} ${req.path}`);
+  next();
+});
+
 router.get('/names', (req, res) => {
   const requestDate = req.query.date;
   console.log('Fetching staff names for date:', requestDate);
@@ -128,8 +133,13 @@ router.delete('/:id/shift', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  console.log('POST route hit');
+  console.log('Request body:', req.body);
+  
   const { id, name, role, start, end } = req.body;
   const date = dayjs(start).format('YYYY-MM-DD');
+  
+  console.log('Processing new staff member:', { id, name, role, start, end, date });
   
   // Check for existing staff with shift on this date
   const existingStaffWithShift = staffMembers.find(s => 
