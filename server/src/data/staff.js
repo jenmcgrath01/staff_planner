@@ -55,7 +55,7 @@ const staffMembers = [
     id: '7',
     name: 'Alex Kim',
     primaryRole: 'RN',
-    secondaryRole: 'ST',
+    secondaryRole: null,
     status: 'available',
     shift: {
       date: '2024-02-20',
@@ -68,7 +68,7 @@ const staffMembers = [
     id: '5',
     name: 'Emily Chen',
     primaryRole: 'RN',
-    secondaryRole: 'ST',
+    secondaryRole: null,
     status: 'available',
     skills: ['General', 'Cardiac']
   },
@@ -84,7 +84,7 @@ const staffMembers = [
     id: '8',
     name: 'Jordan Lee',
     primaryRole: 'RN',
-    secondaryRole: 'ST',
+    secondaryRole: null,
     status: 'available',
     skills: ['General', 'Cardiac', 'Ortho']
   }

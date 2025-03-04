@@ -4,12 +4,14 @@ import staffRoutes from './routes/staff';
 import casesRoutes from './routes/cases';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
+// Fix the CORS configuration
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173', // Your React app URL
-  credentials: true // If you're using cookies/sessions
+  origin: process.env.CLIENT_URL || ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
 }));
+
 app.use(express.json());
 
 // Basic health check endpoint

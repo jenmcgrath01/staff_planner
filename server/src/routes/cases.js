@@ -95,7 +95,7 @@ const cases = [
         id: '7',
         name: 'Alex Kim',
         primaryRole: 'RN',
-        secondaryRole: 'ST',
+        secondaryRole: null,
         skills: ['General', 'Ortho', 'Neuro']
       },
       st: null
